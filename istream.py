@@ -176,15 +176,13 @@ class ObjectIStream:
         for field in desc.fields:
             obj.fields[field.name] = self.__read_hint(field.type)
 
-        ser = java.Serializable.get_class(desc.name)
-        if ser is not None:
-            bd = self.read()
-            if not isinstance(bd, BlockDataReader):
-                raise self.ReadError('missing blockdata for %s' % desc.name)
-        else:
-            bd = None
+        return java.build_object(obj, self.__get_blockdata)
 
-        return java.build_object(obj, bd)
+    def __get_blockdata(self):
+        bd = self.read()
+        if not isinstance(bd, BlockDataReader):
+            raise self.ReadError('missing blockdata for %s' % desc.name)
+        return bd        
 
     def __read_exception(self):
         raise self.ReadError('unimplemented')
