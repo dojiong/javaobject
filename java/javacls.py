@@ -13,6 +13,20 @@ class JavaClass(metaclass=JavaClassMeta):
     _classes = {}
     __javaclass__ = 'Java'
 
+    class InvalidClass(Exception):
+        pass
+
     @classmethod
-    def get_class(cls, name):
-        return cls._classes.get(name, None)
+    def resolve(cls, name):
+        if name[0] == 'L' and name[-1] == ';':
+            name = name[1:-1]
+            if name.find('.') == -1:
+                name = name.replace('/', '.')
+        rst = cls._classes.get(name, None)
+        if rst is None:
+            raise cls.InvalidClass('can\'t find %r' % name)
+        return rst
+
+    @classmethod
+    def signature(cls):
+        return 'L%s;' % cls.__javaclass__.replace('.', '/')

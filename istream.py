@@ -1,4 +1,4 @@
-import consts
+from java import consts
 from binary import BinReader
 from reftable import ReferenceTable
 import java
@@ -121,7 +121,7 @@ class ObjectIStream:
                         'invalid TypeString (field: %s)' % name)
             else:
                 signature = t
-            desc.fields.append(java.Field(t, name, signature))
+            desc.fields.append(java.resolve_field(t, name, signature))
         if not self.__bin.is_equal(consts.TC_ENDBLOCKDATA):
             raise self.ReadError('invalid ClassDesc end')
         next = self.read()
@@ -147,36 +147,43 @@ class ObjectIStream:
         desc = self.read()
         if not isinstance(desc, (type(None), java.ClassDesc)):
             raise self.ReadError('invalid array description')
-        ary = java.Array(desc, [])
-        self.__ref.put(ary)
+        ary = java.ArrayDesc(desc, [])
+        idx = self.__ref.put(ary)
 
         for i in range(self.__bin.uint32()):
             ary.data.append(self.read())
 
-        return ary
+        newary = java.build_array(ary)
+        self.__ref.replace(idx, newary)
+        return newary
 
     def __read_enum(self):
         desc = self.read()
         if not isinstance(desc, (type(None), java.ClassDesc)):
             raise self.ReadError('invalid enum description')
-        enum = java.Enum(desc, '')
+        enum = java.EnumDesc(desc, '')
         val = self.read()
         if not isinstance(val, str):
             raise self.ReadError('invalid enum value')
         enum.value = val
+
+        enum = java.build_enum(enum)
+        self.__ref.put(enum)
         return enum
 
     def __read_object(self):
         desc = self.read()
         if not isinstance(desc, (type(None), java.ClassDesc)):
             raise self.ReadError('invalid object description')
-        obj = java.Object(desc, {})
-        self.__ref.put(obj)
+        obj = java.ObjectDesc(desc, {})
+        idx = self.__ref.put(obj)
 
         for field in desc.fields:
-            obj.fields[field.name] = self.__read_hint(field.type)
+            obj.fields[field.name] = self.__read_hint(field.typecode)
 
-        return java.build_object(obj, self.__get_blockdata)
+        newobj = java.build_object(obj, self.__get_blockdata)
+        self.__ref.replace(idx, newobj)
+        return newobj
 
     def __get_blockdata(self):
         bd = self.read()

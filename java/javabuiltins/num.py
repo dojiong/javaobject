@@ -7,3 +7,9 @@ class Number(JavaClass):
 
 class Long(Number):
     __javaclass__ = 'java.lang.Long'
+
+    def __repr__(self):
+        return '%d' % self.value
+
+    def __str__(self):
+        return '%d' % self.value
