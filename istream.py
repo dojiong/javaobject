@@ -188,7 +188,7 @@ class ObjectIStream:
     def __get_blockdata(self):
         bd = self.read()
         if not isinstance(bd, BlockDataReader):
-            raise self.ReadError('missing blockdata for %s' % desc.name)
+            raise self.ReadError('missing blockdata')
         return bd        
 
     def __read_exception(self):
