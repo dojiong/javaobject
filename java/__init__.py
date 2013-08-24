@@ -2,8 +2,7 @@ from .build import *
 from . import javabuiltins
 from .javacls import JavaClass
 from .ser import Serializable
-from collections import UserList
-
+from .field import *
 
 class Array(object):
     def __init__(self, initlist=None):
@@ -75,9 +74,11 @@ def build_object(obj, get_blockdata):
     cls = JavaClass.resolve(obj.desc.name)
     if cls is None:
         raise TypeError('invalid class : %s' % obj.desc.name)
-    newobj = cls()
-    for field in obj.desc.fields:
-        setattr(newobj, field.name, obj.fields[field.name])
+    newobj = cls.__new__(cls)
+    for k, field in cls.__fields__.items():
+        setattr(newobj, k, obj.fields[field.name])
+    if hasattr(newobj, '__build__') and callable(newobj.__build__):
+        newobj.__build__(obj)
 
     if isinstance(newobj, Serializable):
         blockdata = get_blockdata()

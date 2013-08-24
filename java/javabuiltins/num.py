@@ -1,4 +1,5 @@
 from ..javacls import JavaClass
+from ..field import *
 
 
 class Number(JavaClass):
@@ -7,6 +8,8 @@ class Number(JavaClass):
 
 class Long(Number):
     __javaclass__ = 'java.lang.Long'
+
+    value = LongField('value')
 
     def __repr__(self):
         return '%d' % self.value

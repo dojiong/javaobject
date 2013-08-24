@@ -1,5 +1,6 @@
 from ..javacls import JavaClass
 from ..ser import Serializable
+from ..field import *
 
 
 class Map(JavaClass):
@@ -8,6 +9,9 @@ class Map(JavaClass):
 
 class HashMap(JavaClass, Serializable):
     __javaclass__ = 'java.util.HashMap'
+
+    loadFactor = FloatField('loadFactor')
+    threshold = IntField('threshold')
 
     def encode(self, bd):
         pass
@@ -18,7 +22,10 @@ class HashMap(JavaClass, Serializable):
         for i in range(size):
             k = bd.object()
             v = bd.object()
-            self.map[k] = v
+            self.data[k] = v
+
+    def __build__(self, obj):
+        self.data = {}
 
     def __init__(self, dict=None, **kwargs):
         self.data = {}

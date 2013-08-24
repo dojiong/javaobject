@@ -13,6 +13,9 @@ class ArrayList(JavaClass, Serializable):
         for i in range(size):
             self.data.append(bd.object())
 
+    def __build__(self, obj):
+        self.data = []
+
     def __init__(self, initlist=None):
         self.data = []
         if initlist is not None:

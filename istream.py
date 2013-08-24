@@ -10,9 +10,6 @@ class ObjectIStream:
     class ReadError(Exception):
         pass
 
-    def __Read_error(Exception):
-        pass
-
     def __init__(self, f):
         self.__bin = BinReader(f)
         self.__ref = ReferenceTable()
