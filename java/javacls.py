@@ -1,16 +1,26 @@
 from .field import BaseField
+from collections import OrderedDict
 
 class JavaClassMeta(type):
+    def __prepare__(name, bases):
+        return OrderedDict()
+
     def __new__(self, name, bases, clsdict):
         if '__javaclass__' not in clsdict:
             raise TypeError('missing __javaclass__')
 
-        fields = {}
+        fields = OrderedDict()
         for key, field in clsdict.items():
             if isinstance(field, BaseField):
                 fields[key] = field
                 clsdict[key] = field.default
         clsdict['__fields__'] = fields
+        if '__suid__' not in clsdict:
+            clsdict['__suid__'] = 0
+        if '__classflag__' not in clsdict:
+            clsdict['__classflag__'] = 2
+        elif clsdict['__classflag__'] > 0xFF:
+            raise TypeError('invalid class flag: 0x%X' % clsdict['__classflag__'])
 
         cls = type.__new__(self, name, bases, clsdict)
         cls._classes[clsdict['__javaclass__']] = cls

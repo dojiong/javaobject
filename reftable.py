@@ -29,3 +29,6 @@ class ReferenceTable:
 
     def reverse(self, obj):
         return self.reverse_table.get(obj, -1)
+
+    def __contains__(self, obj):
+        return obj in self.reverse_table

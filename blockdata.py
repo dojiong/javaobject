@@ -1,4 +1,4 @@
-from binary import BinReader
+from binary import BinReader, BinWriter
 import io
 
 
@@ -19,3 +19,14 @@ class BlockDataReader(BinReader):
         i = self.__next_obj
         self.__next_obj += 1
         return self.__objects[i]
+
+
+class BlockDataWriter(BinWriter):
+
+    def __init__(self):
+        self.raw = io.BytesIO()
+        self.objects = []
+        super(BlockDataWriter, self).__init__(self.raw)
+
+    def object(self, obj):
+        self.objects.append(obj)

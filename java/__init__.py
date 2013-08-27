@@ -5,7 +5,9 @@ from .ser import Serializable
 from .field import *
 
 class Array(object):
-    def __init__(self, initlist=None):
+    def __init__(self, field, initlist=None, suid=0):
+        self.field = field
+        self.__suid__ = suid
         self.data = []
         if initlist is not None:
             if isinstance(initlist, type(self.data)):
@@ -32,6 +34,9 @@ class Array(object):
 
     def __delitem__(self, i):
         del self.data[i]
+
+    def __iter__(self):
+        return iter(self.data)
 
     def append(self, item):
         self.data.append(item)
@@ -89,11 +94,9 @@ def build_object(obj, get_blockdata):
 
 def build_array(ary):
     field = resolve_field(consts.TP_ARRAY, '', ary.desc.name)
-    cls = field.type
-    if cls is None:
+    if field is None:
         raise TypeError('invalid array : %s' % obj.desc.name)
-    newary = Array(ary.data)
-    newary.type = cls
+    newary = Array(field, ary.data)
     return newary
 
 

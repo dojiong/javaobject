@@ -12,60 +12,60 @@ class BaseField(object):
 
 class BoolField(BaseField):
     typecode = consts.TP_BOOL
-    signature = consts.TP_BOOL
+    signature = chr(consts.TP_BOOL)
     default = False
 
 
 class ByteField(BaseField):
     typecode = consts.TP_BYTE
-    signature = consts.TP_BYTE
+    signature = chr(consts.TP_BYTE)
     default = 0
 
 
 class CharField(BaseField):
     typecode = consts.TP_CHAR
-    signature = consts.TP_CHAR
+    signature = chr(consts.TP_CHAR)
     default = '\x00'
 
 
 class ShortField(BaseField):
     typecode = consts.TP_SHORT
-    signature = consts.TP_SHORT
+    signature = chr(consts.TP_SHORT)
     default = 0
 
 
 class IntField(BaseField):
     typecode = consts.TP_INT
-    signature = consts.TP_INT
+    signature = chr(consts.TP_INT)
     default = 0
 
 
 class LongField(BaseField):
     typecode = consts.TP_LONG
-    signature = consts.TP_LONG
+    signature = chr(consts.TP_LONG)
     default = 0
 
 
 class FloatField(BaseField):
     typecode = consts.TP_FLOAT
-    signature = consts.TP_FLOAT
+    signature = chr(consts.TP_FLOAT)
     default = 0.0
 
 
 class DoubleField(BaseField):
     typecode = consts.TP_DOUBLE
-    signature = consts.TP_DOUBLE
+    signature = chr(consts.TP_DOUBLE)
     default = 0.0
 
 
 class ArrayField(BaseField):
     typecode = consts.TP_ARRAY
-    signature = consts.TP_ARRAY
-    default = []
+    default = None
 
     def __init__(self, name, t):
-        self.ele_type = t
         super(ArrayField, self).__init__(name)
+        self.ele_type = t
+        self.signature = '[' + t.signature
 
 
 class ObjectField(BaseField):
@@ -82,6 +82,7 @@ class ObjectField(BaseField):
 
 
 class StringField(ObjectField):
+    signature = 'Ljava/lang/String;'
     def __init__(self, name):
         super(StringField, self).__init__(name, 'java.lang.String')
 
