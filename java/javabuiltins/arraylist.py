@@ -1,12 +1,19 @@
 from ..javacls import JavaClass
 from ..ser import Serializable
+from ..field import IntField
 
 
 class ArrayList(JavaClass, Serializable):
     __javaclass__ = 'java.util.ArrayList'
+    __suid__ = 8683452581122892189
+    __classflag__ = 3
+
+    size = IntField('size')
 
     def encode(self, bd):
-        pass
+        bd.uint32(len(self.data))
+        for ele in self.data:
+            bd.object(ele)
 
     def decode(self, bd):
         size = bd.uint32()
@@ -45,6 +52,7 @@ class ArrayList(JavaClass, Serializable):
         del self.data[i]
 
     def __add__(self, other):
+        self.size += len(other)
         if isinstance(other, ArrayList):
             return self.__class__(self.data + other.data)
         elif isinstance(other, type(self.data)):
@@ -52,6 +60,7 @@ class ArrayList(JavaClass, Serializable):
         return self.__class__(self.data + list(other))
 
     def __radd__(self, other):
+        self.size += len(other)
         if isinstance(other, ArrayList):
             return self.__class__(other.data + self.data)
         elif isinstance(other, type(self.data)):
@@ -59,6 +68,7 @@ class ArrayList(JavaClass, Serializable):
         return self.__class__(list(other) + self.data)
 
     def __iadd__(self, other):
+        self.size += len(other)
         if isinstance(other, ArrayList):
             self.data += other.data
         elif isinstance(other, type(self.data)):
@@ -77,17 +87,22 @@ class ArrayList(JavaClass, Serializable):
 
     def append(self, item):
         self.data.append(item)
+        self.size += 1
 
     def insert(self, i, item):
         self.data.insert(i, item)
+        self.size += 1
 
     def pop(self, i=-1):
+        self.size -= 1
         return self.data.pop(i)
 
     def remove(self, item):
+        self.size -= 1
         self.data.remove(item)
 
     def clear(self):
+        self.size = 0
         self.data.clear()
 
     def copy(self):
@@ -110,3 +125,4 @@ class ArrayList(JavaClass, Serializable):
             self.data.extend(other.data)
         else:
             self.data.extend(other)
+        self.size = len(self.data)

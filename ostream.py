@@ -179,7 +179,7 @@ class ObjectOStream:
         raise self.WriteError('unimplemented')
 
     def __write_blockdata(self, bd):
-        raw_size = len(bd.raw)
+        raw_size = bd.raw.tell()
         if raw_size > 0xFF:
             self.__bin.byte(consts.TC_BLOCKDATALONG)
             self.__bin.uint32(raw_size)
