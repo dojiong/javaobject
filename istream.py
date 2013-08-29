@@ -103,7 +103,7 @@ class ObjectIStream:
 
     def __read_class_desc(self):
         name = self.__bin.utf()
-        suid = self.__bin.uint64()
+        suid = self.__bin.int64()
         flag = self.__bin.byte()
         fields_size = self.__bin.ushort()
         desc = java.ClassDesc(name, suid, flag, [])

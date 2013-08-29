@@ -9,12 +9,18 @@ class Map(JavaClass):
 
 class HashMap(JavaClass, Serializable):
     __javaclass__ = 'java.util.HashMap'
+    __suid__ = 362498820763181265
+    __classflag__ = 3
 
     loadFactor = FloatField('loadFactor')
     threshold = IntField('threshold')
 
     def encode(self, bd):
-        pass
+        bd.uint32(0x10)
+        bd.uint32(len(self.data))
+        for k, v in self.data.items():
+            bd.object(k)
+            bd.object(v)
 
     def decode(self, bd):
         bd.uint32()

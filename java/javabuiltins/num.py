@@ -4,7 +4,7 @@ from ..field import *
 
 class Number(JavaClass):
     __javaclass__ = 'java.lang.Number'
-    __suid__ = 9704295249057472651
+    __suid__ = -8742448824652078965
 
 
 class Long(Number):
