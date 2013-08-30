@@ -163,7 +163,6 @@ class ObjectOStream:
     def __write_enum(self, obj):
         pass
 
-    @_add_ref
     def __write_object(self, obj):
         if isinstance(obj, str):
             return self.__write_string(obj)
