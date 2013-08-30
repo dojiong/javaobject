@@ -1,4 +1,4 @@
-from binary import BinReader, BinWriter
+from .binary import BinReader, BinWriter
 import io
 
 

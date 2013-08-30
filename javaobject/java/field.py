@@ -1,5 +1,6 @@
 from . import consts
 
+
 class BaseField(object):
     def __init__(self, name):
         super(BaseField, self).__init__()
@@ -63,9 +64,16 @@ class ArrayField(BaseField):
     default = None
 
     def __init__(self, name, t):
+        from .javacls import JavaClass
+
         super(ArrayField, self).__init__(name)
+        if isinstance(t, str):
+            t = JavaClass.resolve(t)
         self.ele_type = t
-        self.signature = '[' + t.signature
+        if callable(t.signature):
+            self.signature = '[' + t.signature()
+        else:
+            self.signature = '[' + t.signature
 
 
 class ObjectField(BaseField):

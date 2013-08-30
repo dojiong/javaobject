@@ -1,8 +1,8 @@
-from java import consts
-from binary import BinWriter
-from blockdata import BlockDataWriter
-from reftable import ReferenceTable
-import java
+from .java import consts
+from .binary import BinWriter
+from .blockdata import BlockDataWriter
+from .reftable import ReferenceTable
+from . import java
 from functools import wraps
 
 

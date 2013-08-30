@@ -1,8 +1,8 @@
-from java import consts
-from binary import BinReader
-from reftable import ReferenceTable
-import java
-from blockdata import BlockDataReader
+from .java import consts
+from .binary import BinReader
+from .reftable import ReferenceTable
+from . import java
+from .blockdata import BlockDataReader
 
 
 class ObjectIStream:
