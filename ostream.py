@@ -185,6 +185,9 @@ class ObjectOStream:
             obj.encode(bd)
             self.__write_blockdata(bd)
 
+        if issubclass(type(obj), Enum):
+            self.__write_string(obj.value)
+
     def __write_exception(self, obj):
         raise self.WriteError('unimplemented')
 
