@@ -6,7 +6,6 @@ from ..field import IntField
 class ArrayList(JavaClass, Serializable):
     __javaclass__ = 'java.util.ArrayList'
     __suid__ = 8683452581122892189
-    __classflag__ = 3
 
     size = IntField('size')
 

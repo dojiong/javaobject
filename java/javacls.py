@@ -1,5 +1,7 @@
 from .field import BaseField
 from collections import OrderedDict
+from . import consts
+
 
 class JavaClassMeta(type):
     def __prepare__(name, bases):
@@ -17,9 +19,8 @@ class JavaClassMeta(type):
         clsdict['__fields__'] = fields
         if '__suid__' not in clsdict:
             clsdict['__suid__'] = 0
-        if '__classflag__' not in clsdict:
-            clsdict['__classflag__'] = 2
-        elif clsdict['__classflag__'] > 0xFF:
+
+        if '__classflag__' in clsdict and clsdict['__classflag__'] > 0xFF:
             raise TypeError('invalid class flag: 0x%X' % clsdict['__classflag__'])
 
         cls = type.__new__(self, name, bases, clsdict)

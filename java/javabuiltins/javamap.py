@@ -10,7 +10,6 @@ class Map(JavaClass):
 class HashMap(JavaClass, Serializable):
     __javaclass__ = 'java.util.HashMap'
     __suid__ = 362498820763181265
-    __classflag__ = 3
 
     loadFactor = FloatField('loadFactor')
     threshold = IntField('threshold')

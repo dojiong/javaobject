@@ -19,6 +19,9 @@ def _add_ref(f):
     return func
 
 
+Enum = java.JavaClass.resolve('java.lang.Enum')
+
+
 class ObjectOStream:
 
     class WriteError(Exception):
@@ -88,10 +91,18 @@ class ObjectOStream:
     def __write_class_desc(self, cls):
         if not hasattr(cls, '__javaclass__'):
             raise self.WriteError('invalid JavaClass: %r' % cls)
+        if hasattr(cls, '__classflag__'):
+            clsflag = cls.__classflag__
+        else:
+            clsflag = consts.SC_SERIALIZABLE
+            if issubclass(cls, java.Serializable):
+                clsflag |= consts.SC_WRITE_METHOD
+            if issubclass(cls, Enum):
+                clsflag |= consts.SC_ENUM
         self.__bin.byte(consts.TC_CLASSDESC)
         self.__bin.utf(cls.__javaclass__)
         self.__bin.int64(cls.__suid__)
-        self.__bin.byte(cls.__classflag__)
+        self.__bin.byte(clsflag)
         self.__bin.ushort(len(cls.__fields__))
         self._ref.put(cls)
         for field in cls.__fields__.values():
