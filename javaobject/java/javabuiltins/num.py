@@ -21,3 +21,19 @@ class Long(Number):
 
     def __str__(self):
         return '%d' % self.value
+
+
+class Integer(Number):
+    __javaclass__ = 'java.lang.Integer'
+    __suid__ = 1360826667806852920
+
+    value = IntField('value')
+
+    def __init__(self, val=0):
+        self.value = val
+
+    def __repr__(self):
+        return '%d' % self.value
+
+    def __str__(self):
+        return '%d' % self.value

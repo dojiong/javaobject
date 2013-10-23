@@ -15,9 +15,10 @@ class ArrayList(JavaClass, Serializable):
             bd.object(ele)
 
     def decode(self, bd):
-        size = bd.uint32()
-        for i in range(size):
-            self.data.append(bd.object())
+        cap = bd.uint32()
+        for i in range(self.size):
+            obj = bd.object()
+            self.data.append(obj)
 
     def __build__(self, obj):
         self.data = []
