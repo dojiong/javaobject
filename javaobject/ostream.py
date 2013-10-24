@@ -199,7 +199,7 @@ class ObjectOStream:
         else:
             self.__bin.byte(consts.TC_BLOCKDATA)
             self.__bin.byte(raw_size)
-        self.__bin.write(bd.raw.getbuffer().tobytes())
+        self.__bin.write(bd.tobytes())
         for obj in bd.objects:
             self.write(obj)
         self.__bin.byte(consts.TC_ENDBLOCKDATA)

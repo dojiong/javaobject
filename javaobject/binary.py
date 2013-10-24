@@ -1,7 +1,8 @@
 from struct import pack, unpack
+import six
 
 
-class BinReader:
+class BinReader(object):
 
     class ReadError(Exception):
         pass
@@ -27,7 +28,7 @@ class BinReader:
         return b''.join(datas)
 
     def byte(self):
-        return self.read(1)[0]
+        return six.byte2int(self.read(1))
 
     def short(self):
         return unpack('>h', self.read(2))[0]
@@ -64,18 +65,18 @@ class BinReader:
         return self.read(size).decode('UTF8')
 
     def is_equal(self, data):
-        if isinstance(data, int):
+        if isinstance(data, six.integer_types):
             if data <= 0xFF:
-                data = bytes([data])
+                data = six.int2byte(data)
             else:
                 raise self.ReadError('invalid assert')
-        if isinstance(data, str):
+        if isinstance(data, six.text_type):
             data = data.encode('utf8')
         real = self.read(len(data))
         return real == data
 
 
-class BinWriter:
+class BinWriter(object):
 
     class WriteError(Exception):
         pass
@@ -85,10 +86,12 @@ class BinWriter:
         # TODO: check f's binary mode
 
     def write(self, data):
+        if isinstance(data, six.text_type):
+            data = data.encode('utf8')
         self.__f.write(data)
 
     def byte(self, data):
-        self.write(bytes([data]))
+        self.write(six.int2byte(data))
 
     def short(self, data):
         self.write(pack('>h', data))
@@ -117,9 +120,13 @@ class BinWriter:
     def utf(self, s):
         # TODO: UTF format
         self.ushort(len(s))
-        self.write(s.encode('UTF8'))
+        if isinstance(s, six.text_type):
+            s = s.encode('utf8')
+        self.write(s)
 
     def utf_long(self, s):
         # TODO: UTF format
         self.uint64(len(s))
-        self.write(s.encode('UTF8'))
+        if isinstance(s, six.text_type):
+            s = s.encode('utf8')
+        self.write(s)

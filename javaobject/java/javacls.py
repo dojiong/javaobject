@@ -1,6 +1,7 @@
 from .field import BaseField
 from collections import OrderedDict
 from . import consts
+import six
 
 
 class JavaClassMeta(type):
@@ -28,7 +29,8 @@ class JavaClassMeta(type):
         return cls
 
 
-class JavaClass(metaclass=JavaClassMeta):
+@six.add_metaclass(JavaClassMeta)
+class JavaClass(object):
     _classes = {}
     __javaclass__ = 'Java'
 

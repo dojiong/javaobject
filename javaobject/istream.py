@@ -3,6 +3,7 @@ from .binary import BinReader
 from .reftable import ReferenceTable
 from . import java
 from .blockdata import BlockDataReader
+import six
 
 
 class ObjectIStream:
@@ -113,7 +114,7 @@ class ObjectIStream:
             name = self.__bin.utf()
             if t == consts.TP_OBJECT or t == consts.TP_ARRAY:
                 signature = self.read()
-                if not isinstance(signature, str):
+                if not isinstance(signature, six.text_type):
                     raise self.ReadError(
                         'invalid TypeString (field: %s)' % name)
             else:
