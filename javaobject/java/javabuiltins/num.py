@@ -25,6 +25,9 @@ class Long(Number):
     def __eq__(self, n):
         return self.value == n
 
+    def __topy__(self):
+        return self.value
+
 
 class Integer(Number):
     __javaclass__ = 'java.lang.Integer'
@@ -43,3 +46,6 @@ class Integer(Number):
 
     def __eq__(self, n):
         return self.value == n
+
+    def __topy__(self):
+        return self.value

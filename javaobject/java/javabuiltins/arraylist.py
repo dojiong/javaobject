@@ -23,6 +23,9 @@ class ArrayList(JavaClass, Serializable):
     def __build__(self, obj):
         self.data = []
 
+    def __topy__(self):
+        return self.data
+
     def __init__(self, initlist=None):
         self.data = []
         if initlist is not None:

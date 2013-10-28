@@ -32,6 +32,9 @@ class HashMap(JavaClass, Serializable):
     def __build__(self, obj):
         self.data = {}
 
+    def __topy__(self):
+        return self.data
+
     def __init__(self, dict=None, **kwargs):
         self.data = {}
         if dict is not None:

@@ -4,7 +4,9 @@ from .javacls import JavaClass
 from .ser import Serializable
 from .field import *
 
+
 class Array(object):
+
     def __init__(self, field, initlist=None, suid=0):
         self.field = field
         self.__suid__ = suid
@@ -88,6 +90,9 @@ def build_object(obj, get_blockdata):
     if isinstance(newobj, Serializable):
         blockdata = get_blockdata()
         newobj.decode(blockdata)
+    
+    if hasattr(newobj, '__topy__') and callable(newobj.__topy__):
+        newobj = newobj.__topy__()
 
     return newobj
 
@@ -96,8 +101,7 @@ def build_array(ary):
     field = resolve_field(consts.TP_ARRAY, '', ary.desc.name)
     if field is None:
         raise TypeError('invalid array : %s' % obj.desc.name)
-    newary = Array(field, ary.data)
-    return newary
+    return ary.data
 
 
 def build_eunm(enum):

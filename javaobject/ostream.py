@@ -178,7 +178,7 @@ class ObjectOStream:
                 func = self.__field_table.get(field.typecode, None)
                 if func is None:
                     raise self.WriteError('invalid object field')
-                func(val)
+                func(field.__frompy__(val))
 
         if isinstance(obj, java.Serializable):
             bd = BlockDataWriter()

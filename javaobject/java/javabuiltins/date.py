@@ -1,6 +1,7 @@
 from ..javacls import JavaClass
 from ..ser import Serializable
 from ..field import *
+from datetime import datetime
 
 
 class Date(JavaClass, Serializable):
@@ -14,3 +15,6 @@ class Date(JavaClass, Serializable):
 
     def decode(self, bd):
         self.timestamp = bd.uint64() / 1000.0
+
+    def __topy__(self):
+        return datetime.fromtimestamp(self.timestamp)
