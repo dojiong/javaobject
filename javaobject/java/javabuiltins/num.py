@@ -22,6 +22,9 @@ class Long(Number):
     def __str__(self):
         return '%d' % self.value
 
+    def __eq__(self, n):
+        return self.value == n
+
 
 class Integer(Number):
     __javaclass__ = 'java.lang.Integer'
@@ -37,3 +40,6 @@ class Integer(Number):
 
     def __str__(self):
         return '%d' % self.value
+
+    def __eq__(self, n):
+        return self.value == n
