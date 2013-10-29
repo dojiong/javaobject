@@ -8,14 +8,12 @@ from functools import wraps
 
 def _add_ref(f):
     @wraps(f)
-    def func(self, obj):
-        if not hasattr(obj, '__hash__') or obj.__hash__ is None:
-            return f(self, obj)
+    def func(self, obj, *argv, **kwargv):
         idx = self._ref.reverse(obj)
         if idx != -1:
             self._write_reference(idx)
         else:
-            f(self, obj)
+            f(self, obj, *argv, **kwargv)
     return func
 
 
@@ -108,19 +106,19 @@ class ObjectOStream:
             self.__bin.byte(consts.TP_DOUBLE)
         self.__bin.double(v)
 
-    def __write_null(self, obj):
+    def __write_null(self, obj, write_type=True):
         self.__bin.byte(consts.TC_NULL)
 
-    def _write_reference(self, idx):
+    def _write_reference(self, idx, write_type=True):
         self.__bin.byte(consts.TC_REFERENCE)
         self.__bin.uint32(consts.baseWireHandle + idx)
 
-    def __write_class(self, cls):
+    def __write_class(self, cls, write_type=True):
         self.__bin.byte(consts.TC_CLASS)
         self.__write_class_desc(cls)
 
     @_add_ref
-    def __write_class_desc(self, cls):
+    def __write_class_desc(self, cls, write_type=True):
         if not hasattr(cls, '__javaclass__'):
             raise self.WriteError('invalid JavaClass: %r' % cls)
         if hasattr(cls, '__classflag__'):
@@ -155,11 +153,11 @@ class ObjectOStream:
         else:
             self.__write_class_desc(upper)
 
-    def __write_proxy_classDesc(self, obj):
+    def __write_proxy_classDesc(self, obj, write_type=True):
         raise self.WriteError('unimplemented')
 
     @_add_ref
-    def __write_string(self, s):
+    def __write_string(self, s, write_type=True):
         if s is None:
             return self.__write_null(s)
         if len(s) <= 0xFFFF:
@@ -171,12 +169,15 @@ class ObjectOStream:
         self._ref.put(s)
 
     @_add_ref
-    def __write_array(self, ary):
+    def __write_array(self, ary, write_type=True):
         if ary is None:
             return self.__write_null(ary)
         self.__bin.byte(consts.TC_ARRAY)
         self.__bin.byte(consts.TC_CLASSDESC)
-        self.__bin.utf('[' + ary.field.signature.replace('/', '.'))
+        sig = ary.field.signature
+        if callable(sig):
+            sig = sig()
+        self.__bin.utf('[' + sig.replace('/', '.'))
         self.__bin.int64(ary.__suid__)
         self.__bin.byte(2)
         self.__bin.ushort(0)
@@ -184,14 +185,11 @@ class ObjectOStream:
         self.__bin.byte(consts.TC_NULL)
 
         self.__bin.uint32(len(ary))
-        func = self.__field_table.get(ord(ary.field.signature[0]), None)
-        if func is None:
-            raise self.WriteError('invalid array field')
         for e in ary:
-            func(e)
+            self.write(ary.field.__frompy__(e))
 
     @_add_ref
-    def __write_enum(self, obj):
+    def __write_enum(self, obj, write_type=True):
         pass
 
     def __write_object(self, obj, write_type=True):
@@ -210,7 +208,7 @@ class ObjectOStream:
                 if func is None:
                     raise self.WriteError('invalid object field')
                 if not isinstance(val, field.type):
-                    val = field.type.__frompy__(val)
+                    val = field.__frompy__(val)
                 func(val, write_type=False)
 
         if isinstance(obj, java.Serializable):
@@ -221,10 +219,10 @@ class ObjectOStream:
         if issubclass(type(obj), Enum):
             self.__write_string(obj.value)
 
-    def __write_exception(self, obj):
+    def __write_exception(self, obj, write_type=True):
         raise self.WriteError('unimplemented')
 
-    def __write_blockdata(self, bd):
+    def __write_blockdata(self, bd, write_type=True):
         raw_size = bd.raw.tell()
         if raw_size > 0xFF:
             self.__bin.byte(consts.TC_BLOCKDATALONG)

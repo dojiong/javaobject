@@ -1,4 +1,5 @@
 from . import consts
+from .array import Array
 
 
 class BaseField(object):
@@ -10,9 +11,10 @@ class BaseField(object):
     def __repr__(self):
         return '<%s: %s>' % (self.__class__.__name__, self.name)
 
-    @classmethod
-    def __frompy__(cls, v):
-        return v
+    def __frompy__(self, v):
+        if self.type == self.__class__:
+            return v
+        return self.type.__frompy__(v)
 
 
 class BoolField(BaseField):
@@ -78,6 +80,13 @@ class ArrayField(BaseField):
             self.signature = '[' + t.signature()
         else:
             self.signature = '[' + t.signature
+
+    def __frompy__(self, v):
+        if isinstance(v, (list, tuple)):
+            return Array(self.ele_type, v)
+        elif isinstance(v, Array):
+            return v
+        raise ValueError('invalid Array')
 
 
 class ObjectField(BaseField):
