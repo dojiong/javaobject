@@ -3,6 +3,7 @@ from ..ser import Serializable
 from ..field import *
 from datetime import datetime
 import six
+import time
 
 
 class Date(JavaClass, Serializable):
@@ -23,7 +24,9 @@ class Date(JavaClass, Serializable):
     @classmethod
     def __frompy__(cls, v):
         if isinstance(v, datetime):
-            return cls(v.timestamp())
+            if six.PY3:
+                return cls(v.timestamp())
+            return cls(time.mktime(v.timetuple()))
         elif isinstance(v, six.integer_types):
             return cls(v)
         raise ValueError('invalid Date')

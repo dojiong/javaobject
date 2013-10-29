@@ -1,10 +1,10 @@
 from .field import BaseField
 from collections import OrderedDict
-from . import consts
+from .prepareable import Prepareable
 import six
 
 
-class JavaClassMeta(type):
+class JavaClassMeta(six.with_metaclass(Prepareable, type)):
     def __prepare__(name, bases):
         return OrderedDict()
 

@@ -10,6 +10,8 @@ class Map(JavaClass):
     def __frompy__(cls, v):
         if isinstance(v, dict):
             return HashMap(v)
+        elif isinstance(v, HashMap):
+            return v
         raise ValueError('invalid Map')
 
 

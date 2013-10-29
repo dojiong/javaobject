@@ -3,7 +3,7 @@ from .array import Array
 
 
 class BaseField(object):
-    def __init__(self, name):
+    def __init__(self, name='$'):
         super(BaseField, self).__init__()
         self.name = name
         self.type = self.__class__
@@ -74,7 +74,7 @@ class ArrayField(BaseField):
 
         super(ArrayField, self).__init__(name)
         if isinstance(t, str):
-            t = JavaClass.resolve(t)
+            t = JavaClass.resolve(t)('$')
         self.ele_type = t
         if callable(t.signature):
             self.signature = '[' + t.signature()
@@ -104,7 +104,7 @@ class ObjectField(BaseField):
 
 class StringField(ObjectField):
     signature = 'Ljava/lang/String;'
-    def __init__(self, name):
+    def __init__(self, name='$'):
         super(StringField, self).__init__(name, 'java.lang.String')
 
 
