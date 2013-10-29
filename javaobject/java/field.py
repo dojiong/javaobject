@@ -1,5 +1,4 @@
 from . import consts
-import six
 
 
 class BaseField(object):
@@ -11,7 +10,8 @@ class BaseField(object):
     def __repr__(self):
         return '<%s: %s>' % (self.__class__.__name__, self.name)
 
-    def __frompy__(self, v):
+    @classmethod
+    def __frompy__(cls, v):
         return v
 
 
@@ -19,9 +19,6 @@ class BoolField(BaseField):
     typecode = consts.TP_BOOL
     signature = chr(consts.TP_BOOL)
     default = False
-
-    def __frompy__(self, v):
-        return True if v else False
 
 
 class ByteField(BaseField):
@@ -35,13 +32,6 @@ class CharField(BaseField):
     signature = chr(consts.TP_CHAR)
     default = '\x00'
 
-    def __frompy__(self, v):
-        if isinstance(v, (six.binary_type, six.text_type)):
-            return v and v[0] or '\x00'
-        elif isinstance(v, six.integer_types):
-            return chr(v)
-        return v
-
 
 class ShortField(BaseField):
     typecode = consts.TP_SHORT
@@ -54,19 +44,11 @@ class IntField(BaseField):
     signature = chr(consts.TP_INT)
     default = 0
 
-    def __frompy__(self, v):
-        from .javabuiltins import num
-        return num.Integer(v)
-
 
 class LongField(BaseField):
     typecode = consts.TP_LONG
     signature = chr(consts.TP_LONG)
     default = 0
-
-    def __frompy__(self, v):
-        from .javabuiltins import num
-        return num.Long(v)
 
 
 class FloatField(BaseField):

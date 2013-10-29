@@ -30,14 +30,6 @@ class ObjectOStream:
     def __init__(self, f):
         self.__bin = BinWriter(f)
         self._ref = ReferenceTable()
-        self.write_bool = lambda x: self.__bin.byte(1) if x else self.__bin.byte(0)
-        self.write_byte = self.__bin.byte
-        self.write_char = lambda x: self.__bin.byte(ord(x))
-        self.write_short = self.__bin.short
-        self.write_int = self.__bin.int32
-        self.write_long = self.__bin.int64
-        self.write_float = self.__bin.float
-        self.write_double = self.__bin.double
         self.__write_table = {
             bool: self.write_bool,
             int: self.write_int,
@@ -75,6 +67,46 @@ class ObjectOStream:
             self.__write_object(obj)
         else:
             raise self.WriteError('invalid type : %r' % type(obj))
+
+    def write_bool(self, v, write_type=True):
+        if write_type:
+            self.__bin.byte(consts.TP_BOOL)
+        self.__bin.byte(1) if v else self.__bin.byte(0)
+
+    def write_byte(self, v, write_type=True):
+        if write_type:
+            self.__bin.byte(consts.TP_BYTE)
+        self.__bin.byte(v)
+
+    def write_char(self, v, write_type=True):
+        if write_type:
+            self.__bin.byte(consts.TP_CHAR)
+        self.__bin.byte(ord(v))
+
+    def write_short(self, v, write_type=True):
+        if write_type:
+            self.__bin.byte(consts.TP_SHORT)
+        self.__bin.short(v)
+
+    def write_int(self, v, write_type=True):
+        if write_type:
+            self.__bin.byte(consts.TP_INT)
+        self.__bin.int32(v)
+
+    def write_long(self, v, write_type=True):
+        if write_type:
+            self.__bin.byte(consts.TP_LONG)
+        self.__bin.int64(v)
+
+    def write_float(self, v, write_type=True):
+        if write_type:
+            self.__bin.byte(consts.TP_FLOAT)
+        self.__bin.float(v)
+
+    def write_double(self, v, write_type=True):
+        if write_type:
+            self.__bin.byte(consts.TP_DOUBLE)
+        self.__bin.double(v)
 
     def __write_null(self, obj):
         self.__bin.byte(consts.TC_NULL)
@@ -154,7 +186,6 @@ class ObjectOStream:
         self.__bin.uint32(len(ary))
         func = self.__field_table.get(ord(ary.field.signature[0]), None)
         if func is None:
-            print(ary.field.signature)
             raise self.WriteError('invalid array field')
         for e in ary:
             func(e)
@@ -163,7 +194,7 @@ class ObjectOStream:
     def __write_enum(self, obj):
         pass
 
-    def __write_object(self, obj):
+    def __write_object(self, obj, write_type=True):
         if isinstance(obj, str):
             return self.__write_string(obj)
         self.__bin.byte(consts.TC_OBJECT)
@@ -178,7 +209,9 @@ class ObjectOStream:
                 func = self.__field_table.get(field.typecode, None)
                 if func is None:
                     raise self.WriteError('invalid object field')
-                func(field.__frompy__(val))
+                if not isinstance(val, field.type):
+                    val = field.type.__frompy__(val)
+                func(val, write_type=False)
 
         if isinstance(obj, java.Serializable):
             bd = BlockDataWriter()

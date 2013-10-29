@@ -90,11 +90,8 @@ def build_object(obj, get_blockdata):
     if isinstance(newobj, Serializable):
         blockdata = get_blockdata()
         newobj.decode(blockdata)
-    
-    if hasattr(newobj, '__topy__') and callable(newobj.__topy__):
-        newobj = newobj.__topy__()
 
-    return newobj
+    return newobj.__topy__()
 
 
 def build_array(ary):

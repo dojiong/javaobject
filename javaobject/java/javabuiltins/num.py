@@ -6,6 +6,10 @@ class Number(JavaClass):
     __javaclass__ = 'java.lang.Number'
     __suid__ = -8742448824652078965
 
+    @classmethod
+    def __frompy__(cls, v):
+        return cls(v)
+
 
 class Long(Number):
     __javaclass__ = 'java.lang.Long'

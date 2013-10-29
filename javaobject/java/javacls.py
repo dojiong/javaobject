@@ -51,3 +51,10 @@ class JavaClass(object):
     @classmethod
     def signature(cls):
         return 'L%s;' % cls.__javaclass__.replace('.', '/')
+
+    def __topy__(self):
+        return self
+
+    @classmethod
+    def __frompy__(self, v):
+        return v

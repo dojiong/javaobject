@@ -26,6 +26,14 @@ class ArrayList(JavaClass, Serializable):
     def __topy__(self):
         return self.data
 
+    @classmethod
+    def __frompy__(cls, v):
+        if isinstance(v, list):
+            return cls(v)
+        elif isinstance(v, tuple):
+            return cls(v)
+        raise ValueError('invalid ArrayList')
+
     def __init__(self, initlist=None):
         self.data = []
         if initlist is not None:

@@ -6,6 +6,12 @@ from ..field import *
 class Map(JavaClass):
     __javaclass__ = 'java.util.Map'
 
+    @classmethod
+    def __frompy__(cls, v):
+        if isinstance(v, dict):
+            return HashMap(v)
+        raise ValueError('invalid Map')
+
 
 class HashMap(JavaClass, Serializable):
     __javaclass__ = 'java.util.HashMap'
@@ -35,12 +41,18 @@ class HashMap(JavaClass, Serializable):
     def __topy__(self):
         return self.data
 
+    @classmethod
+    def __frompy__(cls, v):
+        if isinstance(v, map):
+            return cls(v)
+        raise ValueError('invalid HashMap')
+
     def __init__(self, dict=None, **kwargs):
         self.data = {}
         if dict is not None:
-            self.update(dict)
+            self.data.update(dict)
         if len(kwargs):
-            self.update(kwargs)
+            self.data.update(kwargs)
 
     def __len__(self):
         return len(self.data)
