@@ -1,14 +1,11 @@
 from ..javacls import JavaClass
 from ..field import *
+import six
 
 
 class Number(JavaClass):
     __javaclass__ = 'java.lang.Number'
     __suid__ = -8742448824652078965
-
-    @classmethod
-    def __frompy__(cls, v):
-        return cls(v)
 
 
 class Long(Number):
@@ -32,6 +29,12 @@ class Long(Number):
     def __topy__(self):
         return self.value
 
+    @classmethod
+    def __frompy__(cls, v):
+        if not isinstance(v, six.integer_types):
+            raise ValueError('integer required')
+        return cls(v)
+
 
 class Integer(Number):
     __javaclass__ = 'java.lang.Integer'
@@ -53,3 +56,9 @@ class Integer(Number):
 
     def __topy__(self):
         return self.value
+
+    @classmethod
+    def __frompy__(cls, v):
+        if not isinstance(v, six.integer_types):
+            raise ValueError('integer required')
+        return cls(v)
