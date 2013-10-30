@@ -10,17 +10,24 @@ class ReferenceTable:
         self.next = 0
         self.reverse_table = {}
 
+    @staticmethod
+    def _get_hash(obj):
+        try:
+            return hash(obj)
+        except:
+            return id(obj)
+
     def put(self, obj):
         self.table.append(obj)
         idx = self.next
-        self.reverse_table[id(obj)] = idx
+        self.reverse_table[self._get_hash(obj)] = idx
         self.next += 1
         return idx
 
     def replace(self, idx, newobj):
-        del self.reverse_table[id(self.table[idx])]
+        del self.reverse_table[self._get_hash(self.table[idx])]
         self.table[idx] = newobj
-        self.reverse_table[id(newobj)] = idx
+        self.reverse_table[self._get_hash(newobj)] = idx
 
     def get(self, idx):
         if idx >= self.next:
@@ -28,7 +35,7 @@ class ReferenceTable:
         return self.table[idx]
 
     def reverse(self, obj):
-        return self.reverse_table.get(id(obj), -1)
+        return self.reverse_table.get(self._get_hash(obj), -1)
 
     def __contains__(self, obj):
-        return id(obj) in self.reverse_table
+        return self._get_hash(obj) in self.reverse_table

@@ -10,7 +10,7 @@ class ArrayList(JavaClass, Serializable):
     size = IntField('size')
 
     def encode(self, bd):
-        bd.uint32(len(self.data))
+        bd.uint32(len(self.data) * 2)
         for ele in self.data:
             bd.object(ele)
 
@@ -43,6 +43,7 @@ class ArrayList(JavaClass, Serializable):
                 self.data[:] = initlist.data[:]
             else:
                 self.data = list(initlist)
+        self.size = len(self.data)
 
     def __repr__(self):
         return repr(self.data)
@@ -61,6 +62,7 @@ class ArrayList(JavaClass, Serializable):
 
     def __delitem__(self, i):
         del self.data[i]
+        self.size = len(self.data)
 
     def __add__(self, other):
         self.size += len(other)
@@ -68,7 +70,9 @@ class ArrayList(JavaClass, Serializable):
             return self.__class__(self.data + other.data)
         elif isinstance(other, type(self.data)):
             return self.__class__(self.data + other)
-        return self.__class__(self.data + list(other))
+        rst = self.__class__(self.data + list(other))
+        self.size = len(self.data)
+        return rst
 
     def __radd__(self, other):
         self.size += len(other)
@@ -76,7 +80,9 @@ class ArrayList(JavaClass, Serializable):
             return self.__class__(other.data + self.data)
         elif isinstance(other, type(self.data)):
             return self.__class__(other + self.data)
-        return self.__class__(list(other) + self.data)
+        rst = self.__class__(list(other) + self.data)
+        self.size = len(self.data)
+        return rst
 
     def __iadd__(self, other):
         self.size += len(other)
@@ -86,23 +92,27 @@ class ArrayList(JavaClass, Serializable):
             self.data += other
         else:
             self.data += list(other)
+        self.size = len(self.data)
         return self
 
     def __mul__(self, n):
-        return self.__class__(self.data * n)
+        rst = self.__class__(self.data * n)
+        self.size = len(self.data)
+        return rst
     __rmul__ = __mul__
 
     def __imul__(self, n):
         self.data *= n
+        self.size = len(self.data)
         return self
 
     def append(self, item):
         self.data.append(item)
-        self.size += 1
+        self.size = len(self.data)
 
     def insert(self, i, item):
         self.data.insert(i, item)
-        self.size += 1
+        self.size = len(self.data)
 
     def pop(self, i=-1):
         self.size -= 1
