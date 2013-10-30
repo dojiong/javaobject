@@ -13,7 +13,6 @@ def _add_ref(f):
         if idx != -1:
             self._write_reference(idx)
         else:
-            self._ref.put(obj)
             f(self, obj, *argv, **kwargv)
     return func
 
