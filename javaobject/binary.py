@@ -119,14 +119,14 @@ class BinWriter(object):
 
     def utf(self, s):
         # TODO: UTF format
-        self.ushort(len(s))
         if isinstance(s, six.text_type):
             s = s.encode('utf8')
+        self.ushort(len(s))
         self.write(s)
 
     def utf_long(self, s):
         # TODO: UTF format
-        self.uint64(len(s))
         if isinstance(s, six.text_type):
             s = s.encode('utf8')
+        self.uint64(len(s))
         self.write(s)

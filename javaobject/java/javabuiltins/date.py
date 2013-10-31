@@ -8,6 +8,7 @@ import time
 
 class Date(JavaClass, Serializable):
     __javaclass__ = 'java.util.Date'
+    __suid__ = 7523967970034938905
 
     def __init__(self, timestamp=0):
         self.timestamp = timestamp

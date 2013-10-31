@@ -35,6 +35,10 @@ class Long(Number):
             raise ValueError('integer required')
         return cls(v)
 
+    def __hash__(self):
+        return hash('_java.lang.Long_%d_%d' % (
+            hash(self.__class__), self.value))
+
 
 class Integer(Number):
     __javaclass__ = 'java.lang.Integer'
@@ -62,3 +66,7 @@ class Integer(Number):
         if not isinstance(v, six.integer_types):
             raise ValueError('integer required')
         return cls(v)
+
+    def __hash__(self):
+        return hash('_java.lang.Integer_%d_%d' % (
+            hash(self.__class__), self.value))

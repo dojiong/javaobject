@@ -13,7 +13,7 @@ class ObjectIStream:
 
     def __init__(self, f):
         self.__bin = BinReader(f)
-        self.__ref = ReferenceTable()
+        self._ref = ReferenceTable()
         self.__read_map = {
             consts.TC_NULL: self.__read_null,
             consts.TC_REFERENCE: self.__read_reference,
@@ -93,8 +93,8 @@ class ObjectIStream:
         idx = self.__bin.uint32()
         idx -= consts.baseWireHandle
         try:
-            return self.__ref.get(idx)
-        except self.__ref.NotFound:
+            return self._ref.get(idx)
+        except self._ref.NotFound:
             raise self.ReadError('invalid reference: %d' % idx)
 
     def __read_class(self):
@@ -108,7 +108,7 @@ class ObjectIStream:
         flag = self.__bin.byte()
         fields_size = self.__bin.ushort()
         desc = java.ClassDesc(name, suid, flag, [])
-        self.__ref.put(desc)
+        self._ref.put(desc)
         for i in range(fields_size):
             t = self.__bin.byte()
             name = self.__bin.utf()
@@ -133,12 +133,12 @@ class ObjectIStream:
 
     def __read_string(self):
         s = self.__bin.utf()
-        self.__ref.put(s)
+        self._ref.put(s)
         return s
 
     def __read_long_string(self):
         s = self.__bin.utfLong()
-        self.__ref.put(s)
+        self._ref.put(s)
         return s
 
     def __read_array(self):
@@ -146,13 +146,13 @@ class ObjectIStream:
         if not isinstance(desc, (type(None), java.ClassDesc)):
             raise self.ReadError('invalid array description')
         ary = java.ArrayDesc(desc, [])
-        idx = self.__ref.put(ary)
+        idx = self._ref.put(ary)
 
         for i in range(self.__bin.uint32()):
             ary.data.append(self.read())
 
         newary = java.build_array(ary)
-        self.__ref.replace(idx, newary)
+        self._ref.replace(idx, newary)
         return newary
 
     def __read_enum(self):
@@ -166,7 +166,7 @@ class ObjectIStream:
         enum.value = val
 
         enum = java.build_enum(enum)
-        self.__ref.put(enum)
+        self._ref.put(enum)
         return enum
 
     def __read_object(self):
@@ -174,13 +174,13 @@ class ObjectIStream:
         if not isinstance(desc, (type(None), java.ClassDesc)):
             raise self.ReadError('invalid object description')
         obj = java.ObjectDesc(desc, {})
-        idx = self.__ref.put(obj)
+        idx = self._ref.put(obj)
 
         for field in desc.fields:
             obj.fields[field.name] = self.__read_hint(field.typecode)
 
         newobj = java.build_object(obj, self.__get_blockdata)
-        self.__ref.replace(idx, newobj)
+        self._ref.replace(idx, newobj)
         return newobj
 
     def __get_blockdata(self):
