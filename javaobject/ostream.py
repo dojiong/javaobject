@@ -4,6 +4,7 @@ from .blockdata import BlockDataWriter
 from .reftable import ReferenceTable
 from . import java
 from functools import wraps
+import six
 
 
 def _add_ref(f):
@@ -39,6 +40,8 @@ class ObjectOStream:
             object: self.__write_object,
             Exception: self.__write_exception,
         }
+        if not six.PY3:
+            self.__write_table[unicode] = self.__write_string
         self.__field_table = {
             consts.TP_BOOL: self.write_bool,
             consts.TP_BYTE: self.write_byte,
