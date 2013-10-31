@@ -143,7 +143,11 @@ class ObjectOStream:
             self.__bin.utf(field.name)
             if field.typecode == consts.TP_ARRAY or \
                     field.typecode == consts.TP_OBJECT:
-                self.__write_string(field.signature)
+                idx = self._ref.reverse(field.signature)
+                if idx != -1:
+                    self._write_reference(idx)
+                else:
+                    self.__write_string(field.signature)
         self.__bin.byte(consts.TC_ENDBLOCKDATA)
         upper = None
         for base in cls.__bases__:
@@ -159,7 +163,6 @@ class ObjectOStream:
     def __write_proxy_classDesc(self, obj, write_type=True):
         raise self.WriteError('unimplemented')
 
-    @_add_ref
     def __write_string(self, s, write_type=True):
         if s is None:
             return self.__write_null(s)

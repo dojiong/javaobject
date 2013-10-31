@@ -55,6 +55,8 @@ class HashMap(JavaClass, Serializable):
             self.data.update(dict)
         if len(kwargs):
             self.data.update(kwargs)
+        self.loadFactor = 0x3f400000
+        self.threshold = len(self.data)
 
     def __len__(self):
         return len(self.data)
@@ -71,6 +73,7 @@ class HashMap(JavaClass, Serializable):
 
     def __delitem__(self, key):
         del self.data[key]
+        self.threshold = len(self.data)
 
     def __iter__(self):
         return iter(self.data)
