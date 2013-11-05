@@ -64,6 +64,9 @@ class ArrayList(JavaClass, Serializable):
         del self.data[i]
         self.size = len(self.data)
 
+    def __iter__(self):
+        return iter(self.data)
+
     def __add__(self, other):
         self.size += len(other)
         if isinstance(other, ArrayList):
