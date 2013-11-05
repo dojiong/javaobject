@@ -199,7 +199,7 @@ class ObjectOStream:
         pass
 
     def __write_object(self, obj, write_type=True):
-        if isinstance(obj, str):
+        if isinstance(obj, six.string_types):
             return self.__write_string(obj)
         self.__bin.byte(consts.TC_OBJECT)
         self.__write_class_desc(type(obj))
