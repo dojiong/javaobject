@@ -16,7 +16,10 @@ class JavaClassMeta(six.with_metaclass(Prepareable, type)):
         for key, field in clsdict.items():
             if isinstance(field, BaseField):
                 fields[key] = field
-                clsdict[key] = field.default
+                if callable(field.default):
+                    clsdict[key] = field.default()
+                else:
+                    clsdict[key] = field.default
         clsdict['__fields__'] = fields
         if '__suid__' not in clsdict:
             clsdict['__suid__'] = 0

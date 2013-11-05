@@ -3,10 +3,12 @@ from .array import Array
 
 
 class BaseField(object):
-    def __init__(self, name='$'):
+    def __init__(self, name='$', **kwargv):
         super(BaseField, self).__init__()
         self.name = name
         self.type = self.__class__
+        if 'default' in kwargv:
+            self.default = kwargv['default']
 
     def __repr__(self):
         return '<%s: %s>' % (self.__class__.__name__, self.name)
@@ -69,10 +71,10 @@ class ArrayField(BaseField):
     typecode = consts.TP_ARRAY
     default = None
 
-    def __init__(self, name, t):
+    def __init__(self, name, t, **kwargv):
         from .javacls import JavaClass
 
-        super(ArrayField, self).__init__(name)
+        super(ArrayField, self).__init__(name, **kwargv)
         if isinstance(t, str):
             t = JavaClass.resolve(t)('$')
         self.ele_type = t
@@ -93,9 +95,9 @@ class ObjectField(BaseField):
     typecode = consts.TP_OBJECT
     default = None
 
-    def __init__(self, name, t):
+    def __init__(self, name, t, **kwargv):
         from .javacls import JavaClass
-        super(ObjectField, self).__init__(name)
+        super(ObjectField, self).__init__(name, **kwargv)
         if isinstance(t, str):
             t = JavaClass.resolve(t)
         self.type = t
@@ -104,8 +106,8 @@ class ObjectField(BaseField):
 
 class StringField(ObjectField):
     signature = 'Ljava/lang/String;'
-    def __init__(self, name='$'):
-        super(StringField, self).__init__(name, 'java.lang.String')
+    def __init__(self, name='$', **kwargv):
+        super(StringField, self).__init__(name, 'java.lang.String', **kwargv)
 
 
 class InvalidField(Exception):
