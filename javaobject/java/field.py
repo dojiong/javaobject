@@ -104,14 +104,30 @@ class ObjectField(BaseField):
         self.signature = t.signature()
 
 
+class GenericObjectField(ObjectField):
+    def __init__(self, name, t, *types, **kwargv):
+        super(GenericObjectField, self).__init__(name, t, **kwargv)
+        tc = getattr(self.type, '__typecount__', None)
+        if tc is None:
+            raise TypeError('missing Genereic Type count: %r' % self.type)
+        if len(types) != tc:
+            raise TypeError('Genereic Type miss match: %r' % self.type)
+        self.generic_types = types
+
+    def __frompy__(self, v):
+        return self.type.__frompy__(v, *self.generic_types)
+
+
 class StringField(ObjectField):
     signature = 'Ljava/lang/String;'
+
     def __init__(self, name='$', **kwargv):
         super(StringField, self).__init__(name, 'java.lang.String', **kwargv)
 
 
 class InvalidField(Exception):
     pass
+
 
 builtin_types = {
     consts.TP_BOOL: BoolField,

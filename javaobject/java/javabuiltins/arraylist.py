@@ -6,13 +6,14 @@ from ..field import IntField
 class ArrayList(JavaClass, Serializable):
     __javaclass__ = 'java.util.ArrayList'
     __suid__ = 8683452581122892189
+    __typecount__ = 1
 
     size = IntField('size')
 
     def encode(self, bd):
         bd.uint32(len(self.data) * 2)
         for ele in self.data:
-            bd.object(ele)
+            bd.object(self.ele_type.__frompy__(ele))
 
     def decode(self, bd):
         cap = bd.uint32()
@@ -27,14 +28,23 @@ class ArrayList(JavaClass, Serializable):
         return self.data
 
     @classmethod
-    def __frompy__(cls, v):
-        if isinstance(v, list):
-            return cls(v)
-        elif isinstance(v, tuple):
-            return cls(v)
+    def __frompy__(cls, v, etype):
+        if isinstance(etype, str):
+            etype = JavaClass.resolve(etype)
+        elif not issubclass(etype, JavaClass):
+            raise ValueError('invalid List Type')
+
+        if isinstance(v, (list, tuple)):
+            return cls(etype, v)
         raise ValueError('invalid ArrayList')
 
-    def __init__(self, initlist=None):
+    def __init__(self, etype, initlist=None):
+        if isinstance(etype, str):
+            etype = JavaClass.resolve(etype)
+        elif not issubclass(etype, JavaClass):
+            raise ValueError('invalid List Type')
+        self.ele_type = etype
+
         self.data = []
         if initlist is not None:
             if isinstance(initlist, type(self.data)):
