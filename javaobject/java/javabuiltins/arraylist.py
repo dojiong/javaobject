@@ -41,7 +41,7 @@ class ArrayList(JavaClass, Serializable):
     def __init__(self, etype, initlist=None):
         if isinstance(etype, str):
             etype = JavaClass.resolve(etype)
-        elif not issubclass(etype, JavaClass):
+        elif isinstance(etype, type) and not issubclass(etype, JavaClass):
             raise ValueError('invalid List Type')
         self.ele_type = etype
 
