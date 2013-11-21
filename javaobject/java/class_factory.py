@@ -7,18 +7,6 @@ class LazyDescription(object):
     pass
 
 
-class LazyClass(object):
-    def __init__(self, name, factory):
-        self.__javaclass__ = name
-        self.factory = factory
-
-    def signature(self):
-        return 'L%s;' % self.__javaclass__.replace('.', '/')
-
-    def get(self):
-        return self.factory[self.__javaclass__]
-
-
 class ClassFactory(object):
     def __init__(self, *supers):
         self.supers = supers
@@ -47,8 +35,6 @@ class ClassFactory(object):
                     self.classes[clsname] = cls
                     return cls
             if len(args) == 0:
-                if kwargs.get('lazy', False) is True:
-                    return LazyClass(clsname, self)
                 raise
             elif len(args) == 1:
                 return args[0]

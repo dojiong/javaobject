@@ -120,8 +120,7 @@ class ObjectIStream:
                         'invalid TypeString (field: %s)' % name)
             else:
                 signature = t
-            desc.fields.append(java.resolve_field(
-                t, name, signature, self._factory))
+            desc.fields.append(java.FieldDesc(t, name, signature))
         if not self.__bin.is_equal(consts.TC_ENDBLOCKDATA):
             raise self.ReadError('invalid ClassDesc end')
         next = self.read()

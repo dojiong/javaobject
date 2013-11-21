@@ -146,8 +146,7 @@ def resolve_field(t, name, signature, factory=None):
     if t == consts.TP_OBJECT:
         if signature[0] != 'L' or signature[-1] != ';':
             raise InvalidField('invalid object signature')
-        return ObjectField(name, JavaClass.resolve(
-            signature, lazy=True, factory=factory))
+        return ObjectField(name, JavaClass.resolve(signature, factory=factory))
     elif t == consts.TP_ARRAY:
         if signature[0] != '[':
             raise InvalidField('invalid array signature')

@@ -1,5 +1,21 @@
 
+
+class FieldDesc(object):
+    __slots__ = 'typecode', 'name', 'signature'
+
+    def __init__(self, typecode, name, signature):
+        self.typecode = typecode
+        self.name = name
+        self.signature = signature
+
+    def generate_field(self, factory=None):
+        from .field import resolve_field
+        return resolve_field(
+            self.typecode, self.name, self.signature, factory)
+
+
 class ClassDesc(object):
+    __slots__ = 'name', 'suid', 'flag', 'fields', 'parent'
 
     def __init__(self, name=None, suid=None, flag=None, fields=None):
         self.name = name
@@ -20,11 +36,12 @@ class ClassDesc(object):
             attrs['__factory__'] = factory
         for field in self.fields:
             name = field.name.replace('$', '_')
-            attrs[name] = field
+            attrs[name] = field.generate_field(factory)
         return JavaClassMeta(self.name, (JavaClass, ), attrs)
 
 
 class ArrayDesc(object):
+    __slots__ = 'desc', 'data'
 
     def __init__(self, desc, data):
         self.desc = desc
@@ -35,6 +52,7 @@ class ArrayDesc(object):
 
 
 class EnumDesc(object):
+    __slots__ = 'desc', 'value'
 
     def __init__(self, desc, value):
         self.desc = desc
@@ -45,6 +63,7 @@ class EnumDesc(object):
 
 
 class ObjectDesc(object):
+    __slots__ = 'desc', 'fields'
 
     def __init__(self, desc, fields):
         self.desc = desc
@@ -60,5 +79,4 @@ class ObjectDesc(object):
     def __getattr__(self, k):
         if k in self.fields:
             return self.fields[k]
-        print(ObjectDesc, self)
         return super(ObjectDesc, self).__getattr__(k)
