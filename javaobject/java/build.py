@@ -11,6 +11,18 @@ class ClassDesc(object):
     def __repr__(self):
         return '<Class: %s>' % self.name
 
+    def generate_class(self, factory=None):
+        from .javacls import JavaClassMeta, JavaClass
+        attrs = {'__javaclass__': self.name,
+                 '__suid__': self.suid,
+                 '__classflag__': self.flag}
+        if factory is not None:
+            attrs['__factory__'] = factory
+        for field in self.fields:
+            name = field.name.replace('$', '_')
+            attrs[name] = field
+        return JavaClassMeta(self.name, (JavaClass, ), attrs)
+
 
 class ArrayDesc(object):
 

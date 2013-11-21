@@ -11,7 +11,8 @@ class ObjectIStream:
     class ReadError(Exception):
         pass
 
-    def __init__(self, f):
+    def __init__(self, f, factory=None):
+        self._factory = factory or java.default_class_factory
         self.__bin = BinReader(f)
         self._ref = ReferenceTable()
         self.__read_map = {
@@ -119,7 +120,8 @@ class ObjectIStream:
                         'invalid TypeString (field: %s)' % name)
             else:
                 signature = t
-            desc.fields.append(java.resolve_field(t, name, signature))
+            desc.fields.append(java.resolve_field(
+                t, name, signature, self._factory))
         if not self.__bin.is_equal(consts.TC_ENDBLOCKDATA):
             raise self.ReadError('invalid ClassDesc end')
         next = self.read()
@@ -151,7 +153,7 @@ class ObjectIStream:
         for i in range(self.__bin.uint32()):
             ary.data.append(self.read())
 
-        newary = java.build_array(ary)
+        newary = java.build_array(ary, self._factory)
         self._ref.replace(idx, newary)
         return newary
 
@@ -165,7 +167,7 @@ class ObjectIStream:
             raise self.ReadError('invalid enum value')
         enum.value = val
 
-        enum = java.build_enum(enum)
+        enum = java.build_enum(enum, self._factory)
         self._ref.put(enum)
         return enum
 
@@ -179,7 +181,7 @@ class ObjectIStream:
         for field in desc.fields:
             obj.fields[field.name] = self.__read_hint(field.typecode)
 
-        newobj = java.build_object(obj, self.__get_blockdata)
+        newobj = self._factory.build_object(obj, self.__get_blockdata)
         self._ref.replace(idx, newobj)
         return newobj
 

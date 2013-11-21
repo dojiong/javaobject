@@ -141,16 +141,18 @@ builtin_types = {
     consts.TP_ARRAY: ArrayField}
 
 
-def resolve_field(t, name, signature):
+def resolve_field(t, name, signature, factory=None):
     from .javacls import JavaClass
     if t == consts.TP_OBJECT:
         if signature[0] != 'L' or signature[-1] != ';':
             raise InvalidField('invalid object signature')
-        return ObjectField(name, JavaClass.resolve(signature))
+        return ObjectField(name, JavaClass.resolve(
+            signature, lazy=True, factory=factory))
     elif t == consts.TP_ARRAY:
         if signature[0] != '[':
             raise InvalidField('invalid array signature')
-        internal = resolve_field(ord(signature[1]), '$E', signature[1:])
+        internal = resolve_field(
+            ord(signature[1]), '$E', signature[1:], factory=factory)
         return ArrayField(name, internal.type)
     cls = builtin_types.get(t, None)
     if cls is None:
