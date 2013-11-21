@@ -1,3 +1,4 @@
+import six
 
 
 class FieldDesc(object):
@@ -18,6 +19,8 @@ class ClassDesc(object):
     __slots__ = 'name', 'suid', 'flag', 'fields', 'parent'
 
     def __init__(self, name=None, suid=None, flag=None, fields=None):
+        if six.PY2 and isinstance(name, unicode):
+            name = str(name)
         self.name = name
         self.suid = suid
         self.flag = flag
